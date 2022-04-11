@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">KOUIZINE</string>
+    <string name="kouizine">Kouizine</string>
+    <string name="je_me_connecte">Je me connecte</string>
+    <string name="me_cr_er_un_compte">Me créer un compte</string>
+</resources>
