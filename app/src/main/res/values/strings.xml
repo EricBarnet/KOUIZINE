@@ -3,4 +3,12 @@
     <string name="kouizine">Kouizine</string>
     <string name="je_me_connecte">Je me connecte</string>
     <string name="me_cr_er_un_compte">Me créer un compte</string>
+    <string name="inscription">Inscription</string>
+    <string name="email">Email</string>
+    <string name="prenom">Prenom</string>
+    <string name="nom">Nom</string>
+    <string name="mot_de_passe">Mot de passe</string>
+    <string name="confirmer_le_mot_de_passe">Confirmer le mot de passe</string>
+    <string name="adresse_e_mail">Adresse e-mail</string>
+    <string name="mon_appli_de_kouizine">Mon appli de Kouizine</string>
 </resources>
