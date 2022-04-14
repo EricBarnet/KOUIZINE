@@ -2,24 +2,24 @@ package fr.lilk.kouizine;
 
 public class Recette {
 
-    public String recetteNom, recetteDuree , Exemple;
+    public String recetteNom;
+    public int recetteDuree;
 
     public String getRecetteNom() {
         return recetteNom;
     }
 
-    public String getRecetteDuree() {
+    public int getRecetteDuree() {
         return recetteDuree;
     }
 
-    public String getExemple() {
-        return Exemple;
-    }
-
-    public Recette(String recetteNom, String recetteDuree, String Exemple){
+    public Recette(String recetteNom, int recetteDuree){
         this.recetteNom = recetteNom;
         this.recetteDuree = recetteDuree;
-        this.Exemple = Exemple;
+    }
+
+    public Recette(){
+
     }
 
 }

@@ -32,8 +32,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Recette recette = list.get(position);
         holder.RecipeName.setText(recette.getRecetteNom());
-        holder.Duree.setText(recette.getRecetteDuree());
-        holder.Exemple.setText(recette.getExemple());
+        holder.Duree.setText(Integer.toString(recette.getRecetteDuree()));
     }
 
     @Override
