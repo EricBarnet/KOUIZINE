@@ -1,21 +1,36 @@
 package fr.lilk.kouizine;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
-public class Inscription extends AppCompatActivity implements View.OnClickListener {
+import java.util.regex.Pattern;
+
+public class Inscription extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
-    EditText emailEdit, prenomEdit, nomEdit, mdpEdit, confirmMdpEdit, verif;
+    TextInputEditText etRegEmail, etRegNom, etRegPrenom, etRegPass, etRegConfirmPass;
+    TextView tvLoginHere;
     Button buttonInscris;
 
     @Override
@@ -25,124 +40,64 @@ public class Inscription extends AppCompatActivity implements View.OnClickListen
 
         mAuth = FirebaseAuth.getInstance();
 
-        emailEdit = findViewById(R.id.emailEdit);
-        prenomEdit = findViewById(R.id.prenomEdit);
-        nomEdit = findViewById(R.id.nomEdit);
-        mdpEdit = findViewById(R.id.mdpEdit);
-        confirmMdpEdit = findViewById(R.id.confirmMdpEdit);
-        buttonInscris = (Button) findViewById(R.id.buttonInscri);
-        buttonInscris.setOnClickListener(this);
+        etRegEmail = findViewById(R.id.etRegEmail);
+        etRegNom = findViewById(R.id.etRegNom);
+        etRegPrenom = findViewById(R.id.etRegPrenom);
+        etRegPass = findViewById(R.id.etRegPass);
+        etRegConfirmPass = findViewById(R.id.etRegConfirmPass);
+        buttonInscris = findViewById(R.id.btnRegister);
 
+        tvLoginHere = findViewById(R.id.tvLoginHere);
+        mAuth = FirebaseAuth.getInstance();
+
+        buttonInscris.setOnClickListener(view -> {
+            createUser();
+        });
+
+        tvLoginHere.setOnClickListener(view -> {
+            startActivity(new Intent(Inscription.this, Connexion.class));
+        });
     }
 
-    private Boolean verificationEmail(){
-        String val = verif.getText().toString();
-        /* Restriction regex pour écrire un mail allant de a-z ou A-Z ou des chiffres ou "." ou "_" ou "-"
-        * [a-zA-Z0-9._-]+@[a-z]+\.+[a-z]+ peut correspondre à aef.dq23c@gmail.com
-        * mais ne peut pas être $s/@°@gmail.com car elle ne respecte pas le format a-z A-Z 0-9 et ". ou _ ou -"
-        * */
-        String restrict = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-        if(val.isEmpty()){
-            verif.setError("Email ne doit pas être vide");
-            return false;
-        }else if(!val.matches(restrict)){
-            verif.setError("Format email invalide");
-            return false;
+    private void createUser(){
+        String email = etRegEmail.getText().toString();
+        String nom = etRegNom.getText().toString();
+        String prenom = etRegPrenom.getText().toString();
+        String mdp = etRegPass.getText().toString();
+        String confirmMdp = etRegConfirmPass.getText().toString();
+
+        if(TextUtils.isEmpty(email)){
+            etRegEmail.setError("L'email peut pas etre vide");
+            etRegEmail.requestFocus();
+        }else if(TextUtils.isEmpty(nom)){
+            etRegNom.setError("Nom vide");
+            etRegNom.requestFocus();
+        }else if(TextUtils.isEmpty(prenom)){
+            etRegPrenom.setError("Prenom vide");
+            etRegPrenom.requestFocus();
+        }else if(TextUtils.isEmpty(mdp)){
+            etRegPass.setError("Mot de passe vide");
+            etRegPass.requestFocus();
+        }else if(TextUtils.isEmpty(confirmMdp)){
+            etRegConfirmPass.setError("Comfirmer mot de passe vide");
+            etRegConfirmPass.requestFocus();
+        }else if(!confirmMdp.matches(mdp)){
+            etRegConfirmPass.setError("Mot de passe non identique");
+            etRegConfirmPass.requestFocus();
         }else{
-            verif.setError(null);
-            return true;
-        }
-    }
+            mAuth.createUserWithEmailAndPassword(email, mdp).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful()){
+                        Toast.makeText(Inscription.this, "Utilisateur a bien ete enregriste", Toast.LENGTH_LONG).show();
+                        startActivity(new Intent(Inscription.this, Accueil.class));
+                    }else{
+                        Toast.makeText(Inscription.this, "L'inscription a echoue" + task.getException().getMessage(), Toast.LENGTH_LONG).show();
 
-    private Boolean verificationPrenom(){
-        String val = verif.getText().toString();
-        /* Restriction regex pour écrire un mail allant de a-z ou A-Z ou des chiffres ou "." ou "_" ou "-"
-         * [a-zA-Z0-9._-]+@[a-z]+\.+[a-z]+ peut correspondre à aef.dq23c@gmail.com
-         * mais ne peut pas être $s/@°@gmail.com car elle ne respecte pas le format a-z A-Z 0-9 et ". ou _ ou -"
-         * */
-        String WhiteSpace = "\\s";
-        if(val.isEmpty()){
-            verif.setError("le prenom ne doit pas être vide");
-            return false;
-        }else if(val.matches(WhiteSpace)){
-            verif.setError("le prenom doit pas avoir d'espace");
-            return false;
-        }else{
-            verif.setError(null);
-            return true;
-        }
-    }
-
-    private Boolean verificationNom(){
-        String val = verif.getText().toString();
-        /* Restriction regex pour écrire un mail allant de a-z ou A-Z ou des chiffres ou "." ou "_" ou "-"
-         * [a-zA-Z0-9._-]+@[a-z]+\.+[a-z]+ peut correspondre à aef.dq23c@gmail.com
-         * mais ne peut pas être $s/@°@gmail.com car elle ne respecte pas le format a-z A-Z 0-9 et ". ou _ ou -"
-         * */
-        if(val.isEmpty()){
-            verif.setError("le nom ne doit pas être vide");
-            return false;
-        }else{
-            verif.setError(null);
-            return true;
-        }
-    }
-
-    private Boolean verificationMdp(){
-        String val = verif.getText().toString();
-        String passwordRestrict = "^" + // début de ligne ^
-                "[a-zA-Z]" + // au moins un caractère a-z A-Z
-                "[@#$%^&+=]" + // au moins un caractère spécial
-                "\\S+" + // tout sauf des espaces
-                ".{8,}" + // au moins 8 caractères mdp
-                "$"; // fin de ligne
-        if(val.isEmpty()){
-            verif.setError("Mot de passe ne doit pas être vide");
-            return false;
-        }else if(!val.matches(passwordRestrict)){
-            verif.setError("Format mot de passe invalide");
-            return false;
-        }else{
-            verif.setError(null);
-            return true;
-        }
-    }
-
-    private Boolean verificationConfirmMdp(){
-        String val = verif.getText().toString();
-        String passwordRestrict = "^" + // début de ligne ^
-                "[a-zA-Z]" + // au moins un caractère a-z A-Z
-                "[@#$%^&+=]" + // au moins un caractère spécial
-                "\\S+" + // tout sauf des espaces
-                ".{8,}" + // au moins 8 caractères mdp
-                "$"; // fin de ligne
-        if(val.isEmpty()){
-            verif.setError("Mot de passe ne doit pas être vide");
-            return false;
-        }else if(!val.matches(passwordRestrict)){
-            verif.setError("Format mot de passe invalide");
-            return false;
-        }else{
-            verif.setError(null);
-            return true;
-        }
-    }
-
-
-
-
-    public void registerUser(View view){
-        String email = emailEdit.getText().toString();
-        String prenom = prenomEdit.getText().toString();
-        String nom = nomEdit.getText().toString();
-        String mdp = mdpEdit.getText().toString();
-        String confirmMdp = confirmMdpEdit.getText().toString();
-    }
-
-    @Override
-    public void onClick(View view) {
-        if(view.equals(buttonInscris)){
-            
+                    }
+                }
+            });
         }
     }
 }
+

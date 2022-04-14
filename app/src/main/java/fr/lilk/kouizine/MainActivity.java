@@ -3,11 +3,9 @@ package fr.lilk.kouizine;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -17,7 +15,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         buttonSignin= (Button) findViewById(R.id.buttonSignin);
         buttonSignin.setOnClickListener(this);
         buttonConnected = (Button) findViewById(R.id.buttonConnected);
@@ -35,4 +32,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
     }
+
+
 }
